@@ -1,10 +1,14 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const PORT = process.env.PORT || 3000;
+
 const pokeDex = require('./resources/pokedex.json')
 const cors = require('cors')
 app.use(cors());
 
+app.get('/',(req,res)=>{
+    res.send("Server is running and listening to requests.")
+})
 app.get('/pokemon',(req,res)=>{
     console.log("Request recieved")
     res.send(pokeDex)
@@ -37,6 +41,6 @@ app.get('/pokemon/:id/:info',(req,res)=>{
     
 })
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`)
-})
+app.listen(PORT, () => {
+    console.warn(`App listening on http://localhost:${PORT}`);
+  });
