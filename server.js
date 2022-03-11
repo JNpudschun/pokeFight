@@ -1,11 +1,15 @@
 const express = require('express')
+const mongoose = require("mongoose");
+const Pokemon = require("./models/pokemon");
 const app = express()
 const PORT = process.env.PORT || 3000;
 
 const pokeDex = require('./resources/pokedex.json')
-const cors = require('cors')
+const cors = require('cors');
 app.use(cors());
-
+const mongoDB = "mongodb://test:test1@practicetest-shard-00-00.fnqdh.mongodb.net:27017,practicetest-shard-00-01.fnqdh.mongodb.net:27017,practicetest-shard-00-02.fnqdh.mongodb.net:27017/Leaderboard?ssl=true&replicaSet=atlas-13n72f-shard-0&authSource=admin&retryWrites=true&w=majority"
+ 
+mongoose.connect(mongoDB);
 app.get('/',(req,res)=>{
     res.send("Server is running and listening to requests.")
 })
@@ -40,6 +44,40 @@ app.get('/pokemon/:id/:info',(req,res)=>{
     }
     
 })
+app.get("/leaderboard", (req, res) => {
+    Pokemon.find({}, (err, data) => res.send(data));
+  });
+app.get("/leaderboard/:name", (req, res) => {
+    Pokemon.find({name: req.params.name}, (err, data) => res.send(data));
+  });
+
+app.post("/leaderboard/:name", (req, res) => {
+    Pokemon.create({
+      name: req.params.name,
+      wins: 0,
+      losses: 0,
+    }).then(function (newPokemon) {
+      res.send(newPokemon);
+    });
+  });
+
+app.put("/leaderboard/:name/:result",(req,res)=>{
+    
+    if(req.params.result === "win"){
+        Pokemon.updateOne({name: req.params.name},{$inc:{wins:1}}).then(function (updatePokemon) {
+            res.send(updatePokemon);
+        });
+    } else {
+        Pokemon.updateOne({name: req.params.name},{$inc:{losses:1}}).then(function (updatePokemon) {
+            res.send(updatePokemon);
+        });
+    }
+});
+app.delete("/leaderboard/:name", (req, res) => {
+    Pokemon.deleteOne({ name: req.params.name }).then(function () {
+      res.end();
+    });
+  });
 
 app.listen(PORT, () => {
     console.warn(`App listening on http://localhost:${PORT}`);
