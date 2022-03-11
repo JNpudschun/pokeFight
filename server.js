@@ -56,45 +56,40 @@ app.post("/leaderboard/:name/:result",(req, res) => {
         if (error){
             console.log(error)
         } else {
-            
-              console.log("result:", JSON.stringify(result).length)  //result is true if myData already exists
-            
-         
-    
-    
-    if(JSON.stringify(result).length > 4){
-        if(req.params.result === "win"){
-            Pokemon.updateOne({name: req.params.name},{$inc:{wins:1}}).then(function (updatePokemon) {
-                res.send(updatePokemon);
-            });
-        } 
-        if(req.params.result === "loss"){
-            Pokemon.updateOne({name: req.params.name},{$inc:{losses:1}}).then(function (updatePokemon) {
-                res.send(updatePokemon);
-            });
-        }
-    } else {
-        if(req.params.result === "win"){
-        Pokemon.create({
-            name: req.params.name,
-            wins: 1,
-            losses: 0,
-          }).then(function (newPokemon) {
-            res.send(newPokemon);
-          });
-        }
-        if(req.params.result === "loss"){
-            Pokemon.create({
-                name: req.params.name,
-                wins: 0,
-                losses: 1,
-              }).then(function (newPokemon) {
-                res.send(newPokemon);
-              });
+            if(JSON.stringify(result).length > 4){
+                if(req.params.result === "win"){
+                    Pokemon.updateOne({name: req.params.name},{$inc:{wins:1}}).then(function (updatePokemon) {
+                        res.send(updatePokemon);
+                    });
+                } 
+                if(req.params.result === "loss"){
+                    Pokemon.updateOne({name: req.params.name},{$inc:{losses:1}}).then(function (updatePokemon) {
+                        res.send(updatePokemon);
+                    });
+                }
+            } else {
+                if(req.params.result === "win"){
+                Pokemon.create({
+                    name: req.params.name,
+                    wins: 1,
+                    losses: 0,
+                }).then(function (newPokemon) {
+                    res.send(newPokemon);
+                });
+                }
+                if(req.params.result === "loss"){
+                    Pokemon.create({
+                        name: req.params.name,
+                        wins: 0,
+                        losses: 1,
+                    }).then(function (newPokemon) {
+                        res.send(newPokemon);
+                    });
+                    }
             }
-    }
 
-    } })
+        } 
+    })
   });
 
 app.put("/leaderboard/:name/:result",(req,res)=>{
